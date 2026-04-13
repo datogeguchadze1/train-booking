@@ -1,0 +1,94 @@
+<div class="page-wrap">
+  <div class="container">
+
+    @if (loading()) {
+      <div class="loading-overlay" style="min-height:60vh"><div class="spinner"></div><p>ბილეთი იტვირთება...</p></div>
+    } @else {
+
+      <div class="success-hero">
+        <div class="sc-wrap">
+          <div class="sc-circle">✓</div>
+          <div class="ring r1"></div><div class="ring r2"></div>
+        </div>
+        <h1>ბრონირება წარმატებულია!</h1>
+        <p>თქვენი ბილეთი ბრონირებულია. ქვემოთ ნახავთ დეტალებს.</p>
+      </div>
+
+      <div class="ticket-wrap">
+        <div class="ticket">
+          <div class="tk-head">
+            <div class="tk-logo">🚂 TrainTicket</div>
+            <div class="tk-id">
+              <span class="tid-lbl">ბილეთის ID</span>
+              <span class="tid-val">{{ ticketId() }}</span>
+            </div>
+          </div>
+
+          <div class="tk-route">
+            <div class="tks">
+              <div class="tklbl">საიდან</div>
+              <div class="tkname">{{ from() || ticket()?.train?.station || '—' }}</div>
+            </div>
+            <div class="tkm">
+              <div class="rdots">
+                <div class="dot"></div>
+                <div class="dline"></div>
+                <span>🚂</span>
+                <div class="dline"></div>
+                <div class="dot"></div>
+              </div>
+            </div>
+            <div class="tks end">
+              <div class="tklbl">სად</div>
+              <div class="tkname">{{ to() || '—' }}</div>
+            </div>
+          </div>
+
+          <div class="tk-perf">
+            <div class="pc left"></div>
+            <div class="pline"></div>
+            <div class="pc right"></div>
+          </div>
+
+          <div class="tk-details">
+            @if (ticket()?.name) {
+              <div class="td-item"><span class="td-lbl">👤 მგზავრი</span><span class="td-val">{{ ticket()?.name }}</span></div>
+            }
+            @if (ticket()?.date) {
+              <div class="td-item"><span class="td-lbl">📅 თარიღი</span><span class="td-val">{{ formatDate(ticket()?.date ?? '') }}</span></div>
+            }
+            @if (ticket()?.train?.trainName) {
+              <div class="td-item"><span class="td-lbl">🚂 მატარებელი</span><span class="td-val">{{ ticket()?.train?.trainName }}</span></div>
+            }
+            <div class="td-item">
+              <span class="td-lbl">💳 სტატუსი</span>
+              <span class="td-val">
+                @if (isConfirmed()) { <span class="badge badge-success">✓ დადასტურებული</span> }
+                @else { <span class="badge badge-warning">⏳ მოლოდინი</span> }
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="act-row">
+        @if (!isConfirmed()) {
+          <button class="btn btn-success" [disabled]="confirming()" (click)="confirmTicket()">
+            @if(confirming()){<span class="spinner" style="width:14px;height:14px;border-width:2px"></span>}@else{✅}
+            დადასტურება
+          </button>
+        }
+        <button class="btn btn-danger" [disabled]="cancelling()" (click)="cancelTicket()">
+          @if(cancelling()){<span class="spinner" style="width:14px;height:14px;border-width:2px"></span>}@else{❌}
+          გაუქმება
+        </button>
+        <a routerLink="/my-tickets" class="btn btn-outline">🎫 ყველა ბილეთი</a>
+        <a routerLink="/" class="btn btn-ghost">🏠 მთავარი</a>
+      </div>
+
+      @if (actionMsg()) {
+        <div [class]="actionOk() ? 'success-msg act-msg' : 'error-msg act-msg'">{{ actionMsg() }}</div>
+      }
+    }
+  </div>
+</div>

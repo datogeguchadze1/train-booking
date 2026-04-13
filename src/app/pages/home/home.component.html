@@ -1,0 +1,98 @@
+<div class="home">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="grid-pattern"></div>
+    </div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge"><span class="badge-dot"></span> Georgia Railway — ონლაინ ბრონირება</div>
+        <h1 class="hero-title">იმოგზაურე<br><span class="gradient-text">საქართველოში</span></h1>
+        <p class="hero-subtitle">დაჯავშნე მატარებლის ბილეთი წამებში.<br>მარტივი, სწრაფი და საიმედო.</p>
+
+        <!-- Search Card -->
+        <div class="search-card card">
+          <div class="search-header"><h3>🔍 ბილეთის ძებნა</h3></div>
+          <div class="search-body">
+            <div class="search-row">
+              <div class="form-group">
+                <label class="form-label">საიდან</label>
+                <div class="input-wrap">
+                  <span class="inp-icon">📍</span>
+                  @if (stations().length > 0) {
+                    <select class="form-control" [(ngModel)]="from">
+                      <option value="">-- სადგური --</option>
+                      @for (s of stations(); track s.id) { <option [value]="s.name">{{ s.name }}</option> }
+                    </select>
+                  } @else {
+                    <input class="form-control" [(ngModel)]="from" placeholder="მაგ: თბილისი" />
+                  }
+                </div>
+              </div>
+              <button class="swap-btn" (click)="swapStations()" title="შეცვლა">⇄</button>
+              <div class="form-group">
+                <label class="form-label">სად</label>
+                <div class="input-wrap">
+                  <span class="inp-icon">🏁</span>
+                  @if (stations().length > 0) {
+                    <select class="form-control" [(ngModel)]="to">
+                      <option value="">-- სადგური --</option>
+                      @for (s of stations(); track s.id) { <option [value]="s.name">{{ s.name }}</option> }
+                    </select>
+                  } @else {
+                    <input class="form-control" [(ngModel)]="to" placeholder="მაგ: ბათუმი" />
+                  }
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">თარიღი</label>
+                <div class="input-wrap">
+                  <span class="inp-icon">📅</span>
+                  <input type="date" class="form-control" [(ngModel)]="date" [min]="today" />
+                </div>
+              </div>
+            </div>
+            @if (errorMsg()) { <div class="error-msg">⚠️ {{ errorMsg() }}</div> }
+            <button class="btn btn-primary btn-lg btn-full" (click)="search()" [disabled]="searching()">
+              @if (searching()) { <span class="spinner" style="width:18px;height:18px;border-width:2px"></span> ძებნა... }
+              @else { 🚂 მატარებლების ძებნა }
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-card card"><div class="fi">⚡</div><h4>სწრაფი ბრონირება</h4><p>დაჯავშნე ბილეთი წამებში, ყოველგვარი რიგის გარეშე</p></div>
+        <div class="feature-card card"><div class="fi">🔒</div><h4>უსაფრთხო გადახდა</h4><p>შენი მონაცემები დაცულია უახლესი ტექნოლოგიებით</p></div>
+        <div class="feature-card card"><div class="fi">🎫</div><h4>ელ. ბილეთი</h4><p>მიიღე ბილეთი პირდაპირ ტელეფონზე ან კომპიუტერზე</p></div>
+        <div class="feature-card card"><div class="fi">❌</div><h4>გაუქმება ნებისმიერ დროს</h4><p>გასამგზავრებლამდე ბილეთის გაუქმება შეგიძლია</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Routes -->
+  <section class="popular">
+    <div class="container">
+      <div class="sec-header"><h2>🔥 პოპულარული მარშრუტები</h2><p>ყველაზე ხშირად დაჯავშნული მიმართულებები</p></div>
+      <div class="routes-grid">
+        @for (r of popularRoutes; track r.from) {
+          <div class="route-card card" (click)="selectRoute(r)">
+            <div class="ri">
+              <span class="rcity">{{ r.from }}</span>
+              <div class="rarrow"><div class="rl"></div><span>🚂</span><div class="rl"></div></div>
+              <span class="rcity">{{ r.to }}</span>
+            </div>
+            <div class="rmeta"><span>⏱ {{ r.duration }}</span><span class="rprice">₾{{ r.price }}-დან</span></div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+</div>

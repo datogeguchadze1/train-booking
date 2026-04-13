@@ -1,0 +1,145 @@
+<div class="page-wrap">
+  <div class="container">
+
+    <div class="pg-header">
+      <button class="btn btn-ghost btn-sm" (click)="goBack()">← უკან</button>
+      <div><h1>ბილეთის ბრონირება</h1><p class="route-sub">{{ from() }} → {{ to() }}</p></div>
+    </div>
+
+    <!-- Steps -->
+    <div class="steps">
+      @for (s of steps; track s.key; let i = $index) {
+        <div class="step" [class.active]="step()===s.key" [class.done]="isDone(s.key)">
+          <div class="sc">@if(isDone(s.key)){✓}@else{{{i+1}}}</div>
+          <span class="sl">{{ s.label }}</span>
+        </div>
+        @if (i < steps.length-1) { <div class="sline" [class.done]="isDone(s.key)"></div> }
+      }
+    </div>
+
+    <div class="bk-layout">
+      <div class="bk-main">
+
+        <!-- WAGON -->
+        @if (step() === 'wagon') {
+          <div class="sc-card card">
+            <div class="sc-head"><h2>🚃 ვაგონი</h2><p>აირჩიეთ სასურველი ვაგონი</p></div>
+            @if (loadingVagons()) {
+              <div class="loading-overlay"><div class="spinner"></div><p>ვაგონები იტვირთება...</p></div>
+            } @else if (vagons().length === 0) {
+              <div class="empty-state"><div class="icon">🚃</div><h3>ვაგონები ვერ მოიძებნა</h3></div>
+            } @else {
+              <div class="wagons-grid">
+                @for (v of vagons(); track v.id) {
+                  <div class="wcard" [class.sel]="selVagon()?.id===v.id" (click)="selVagon.set(v)">
+                    <div class="wnum">🚃 ვაგ. {{ v.number }}</div>
+                    <div class="wtype">{{ vagonLabel(v) }}</div>
+                    <div class="wcap">{{ v.capacity ? v.capacity + ' ადგილი' : 'ადგილები' }}</div>
+                  </div>
+                }
+              </div>
+            }
+            <div class="sc-foot">
+              <button class="btn btn-primary" [disabled]="!selVagon()" (click)="goStep('seat')">გაგრძელება →</button>
+            </div>
+          </div>
+        }
+
+        <!-- SEAT -->
+        @if (step() === 'seat') {
+          <div class="sc-card card">
+            <div class="sc-head"><h2>💺 ადგილი</h2><p>ვაგ. {{ selVagon()?.number }} — აირჩიეთ ადგილი</p></div>
+            @if (loadingSeats()) {
+              <div class="loading-overlay"><div class="spinner"></div><p>ადგილები იტვირთება...</p></div>
+            } @else {
+              <div class="seat-legend">
+                <div class="leg-item"><div class="sd avail"></div><span>თავისუფალი</span></div>
+                <div class="leg-item"><div class="sd taken"></div><span>დაკავებული</span></div>
+                <div class="leg-item"><div class="sd selsd"></div><span>არჩეული</span></div>
+              </div>
+              <div class="seat-map">
+                <div class="sm-hdr"><span>A</span><span>B</span><span></span><span>C</span><span>D</span></div>
+                @for (row of seatRows(); track row.num) {
+                  <div class="sm-row">
+                    @for (seat of row.seats; track $index) {
+                      @if (seat === null) {
+                        <div class="saisle">{{ row.num }}</div>
+                      } @else {
+                        <div class="seat"
+                             [class.avail]="seat.isAvailable"
+                             [class.taken]="!seat.isAvailable"
+                             [class.ssel]="selSeat()?.id===seat.id"
+                             (click)="seat.isAvailable && selSeat.set(seat)">
+                          {{ seat.number }}
+                        </div>
+                      }
+                    }
+                  </div>
+                }
+                @if (seats().length === 0) {
+                  <div class="empty-state" style="padding:40px 0"><div class="icon">💺</div><h3>ადგილები ვერ მოიძებნა</h3></div>
+                }
+              </div>
+            }
+            <div class="sc-foot">
+              <button class="btn btn-ghost" (click)="goStep('wagon')">← უკან</button>
+              <button class="btn btn-primary" [disabled]="!selSeat()" (click)="goStep('passenger')">გაგრძელება →</button>
+            </div>
+          </div>
+        }
+
+        <!-- PASSENGER -->
+        @if (step() === 'passenger') {
+          <div class="sc-card card">
+            <div class="sc-head"><h2>👤 მგზავრის ინფო</h2><p>შეავსეთ მგზავრის მონაცემები</p></div>
+            <div class="pass-form">
+              <div class="form-group">
+                <label class="form-label">სახელი და გვარი *</label>
+                <input class="form-control" [(ngModel)]="passengerName" placeholder="მაგ: გიორგი ბერიძე" [class.inp-err]="nameError()" />
+                @if (nameError()) { <span class="ferr">{{ nameError() }}</span> }
+              </div>
+              <div class="form-group">
+                <label class="form-label">ელ. ფოსტა (არასავალდებულო)</label>
+                <input class="form-control" type="email" [(ngModel)]="email" placeholder="name@example.com" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">ტელეფონი (არასავალდებულო)</label>
+                <input class="form-control" type="tel" [(ngModel)]="phone" placeholder="+995 5XX XXX XXX" />
+              </div>
+            </div>
+            @if (bookingError()) { <div class="error-msg bk-err">⚠️ {{ bookingError() }}</div> }
+            <div class="sc-foot">
+              <button class="btn btn-ghost" (click)="goStep('seat')">← უკან</button>
+              <button class="btn btn-primary btn-lg" [disabled]="booking()" (click)="confirm()">
+                @if (booking()) { <span class="spinner" style="width:16px;height:16px;border-width:2px"></span> ბრონირება... }
+                @else { ✅ დაადასტურეთ ბრონირება }
+              </button>
+            </div>
+          </div>
+        }
+
+      </div>
+
+      <!-- Sidebar -->
+      <div class="bk-side">
+        <div class="sum-card card">
+          <h3 class="sum-title">📋 შეჯამება</h3>
+          <div class="sum-rows">
+            <div class="sum-row"><span>მარშრუტი</span><span>{{ from() }} → {{ to() }}</span></div>
+            @if (date()) { <div class="sum-row"><span>თარიღი</span><span>{{ formatDate(date()) }}</span></div> }
+            @if (trainId()) { <div class="sum-row"><span>მატარებელი #</span><span>{{ trainId() }}</span></div> }
+            @if (selVagon()) { <div class="sum-row"><span>ვაგონი</span><span>{{ selVagon()!.number }} ({{ vagonLabel(selVagon()!) }})</span></div> }
+            @if (selSeat()) { <div class="sum-row"><span>ადგილი</span><span>💺 #{{ selSeat()!.number }}</span></div> }
+            @if (passengerName) { <div class="sum-row"><span>მგზავრი</span><span>{{ passengerName }}</span></div> }
+          </div>
+          <div class="sum-div"></div>
+          <div class="sum-status">
+            <div class="ss" [class.done]="isDone('wagon')">@if(isDone('wagon')){✅}@else{⬜} ვაგონი</div>
+            <div class="ss" [class.done]="isDone('seat')">@if(isDone('seat')){✅}@else{⬜} ადგილი</div>
+            <div class="ss" [class.done]="isDone('passenger')">@if(isDone('passenger')){✅}@else{⬜} მგზავრი</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

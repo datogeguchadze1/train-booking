@@ -1,0 +1,86 @@
+<div class="page-wrap">
+  <div class="container">
+
+    <div class="search-bar card">
+      <div class="sb-info">
+        <span class="route-lbl"><strong>{{ from() }}</strong> <span class="arr">→</span> <strong>{{ to() }}</strong></span>
+        @if (date()) { <span class="date-chip">📅 {{ formatDate(date()) }}</span> }
+      </div>
+      <a routerLink="/" class="btn btn-outline btn-sm">✏️ შეცვლა</a>
+    </div>
+
+    <div class="results-hdr">
+      <span class="res-count">
+        @if (!loading()) { 🚂 ნაპოვნია <strong>{{ filteredItems().length }}</strong> რეისი }
+      </span>
+      <select class="form-control form-control-sm" [(ngModel)]="sortBy">
+        <option value="default">სორტირება</option>
+        <option value="price-asc">ფასი ↑</option>
+        <option value="price-desc">ფასი ↓</option>
+      </select>
+    </div>
+
+    @if (loading()) {
+      <div class="loading-overlay"><div class="spinner"></div><p>მატარებლები იტვირთება...</p></div>
+    }
+    @if (error()) { <div class="error-msg mb">⚠️ {{ error() }}</div> }
+
+    @if (!loading()) {
+      @if (filteredItems().length === 0) {
+        <div class="empty-state">
+          <div class="icon">🚂</div>
+          <h3>რეისი ვერ მოიძებნა</h3>
+          <p>სცადეთ სხვა თარიღი ან მარშრუტი</p>
+          <a routerLink="/" class="btn btn-primary" style="margin-top:16px">← ახალი ძებნა</a>
+        </div>
+      } @else {
+        <div class="trains-list">
+          @for (item of filteredItems(); track getId(item)) {
+            <div class="train-card card">
+              <div class="tc-header">
+                <div class="tc-name">🚂 {{ getName(item) }}</div>
+                <div class="tc-badge">{{ getType(item) }}</div>
+              </div>
+              <div class="tc-body">
+                <div class="route-vis">
+                  <div class="st-block">
+                    <div class="st-time">{{ getDepTime(item) }}</div>
+                    <div class="st-name">{{ getFromSt(item) || from() }}</div>
+                  </div>
+                  <div class="journey">
+                    <div class="dur-lbl">{{ getDuration(item) }}</div>
+                    <div class="track">
+                      <div class="tdot s"></div>
+                      <div class="trail"></div>
+                      <div class="tmove">🚂</div>
+                      <div class="trail"></div>
+                      <div class="tdot e"></div>
+                    </div>
+                  </div>
+                  <div class="st-block end">
+                    <div class="st-time">{{ getArrTime(item) }}</div>
+                    <div class="st-name">{{ getToSt(item) || to() }}</div>
+                  </div>
+                </div>
+                <div class="tc-footer">
+                  <div class="chips">
+                    <span class="chip">🪑 ადგილები ხელმისაწვდომია</span>
+                    <span class="chip">💺 ეკონომი / ბიზნესი</span>
+                  </div>
+                  <div class="price-cta">
+                    <div class="price-blk">
+                      <span class="pf">-დან</span>
+                      <span class="pa">₾{{ getPrice(item) }}</span>
+                    </div>
+                    <button class="btn btn-primary" (click)="book(item)">ბილეთის ყიდვა →</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+  </div>
+</div>

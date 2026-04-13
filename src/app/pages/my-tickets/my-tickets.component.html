@@ -1,0 +1,78 @@
+<div class="page-wrap">
+  <div class="container">
+
+    <div class="pg-hdr">
+      <div><h1>🎫 ჩემი ბილეთები</h1><p>ყველა ბრონირებული ბილეთი</p></div>
+      <div class="hdr-act">
+        <button class="btn btn-ghost btn-sm" (click)="loadTickets()">🔄 განახლება</button>
+        @if (tickets().length > 0) {
+          <button class="btn btn-danger btn-sm" [disabled]="cancellingAll()" (click)="cancelAll()">❌ ყველას გაუქმება</button>
+        }
+      </div>
+    </div>
+
+    @if (loading()) { <div class="loading-overlay"><div class="spinner"></div><p>ბილეთები იტვირთება...</p></div> }
+    @if (error()) { <div class="error-msg mb">⚠️ {{ error() }}</div> }
+
+    @if (toast()) {
+      <div [class]="'toast '+(toastType()==='success'?'toast-success':'toast-error')">{{ toast() }}</div>
+    }
+
+    @if (!loading()) {
+      @if (tickets().length === 0) {
+        <div class="empty-state" style="min-height:50vh">
+          <div class="icon">🎫</div>
+          <h3>ბილეთები ვერ მოიძებნა</h3>
+          <p>ჯერ ბილეთი არ გაქვს ბრონირებული</p>
+          <a routerLink="/" class="btn btn-primary" style="margin-top:20px">🔍 ბილეთის ძებნა</a>
+        </div>
+      } @else {
+        <div class="stats-bar">
+          <div class="stat"><span class="sn">{{ tickets().length }}</span><span class="sl">სულ</span></div>
+          <div class="stat"><span class="sn">{{ confirmedCount() }}</span><span class="sl">დადასტურებული</span></div>
+          <div class="stat"><span class="sn">{{ pendingCount() }}</span><span class="sl">მოლოდინი</span></div>
+        </div>
+
+        <div class="tg">
+          @for (t of tickets(); track getId(t)) {
+            <div class="tc card" [class.confirmed]="isConfirmed(t)">
+              <div class="tc-hdr">
+                <div class="tc-route">
+                  <span>{{ getFrom(t) }}</span><span class="tar">→</span><span>{{ getTo(t) }}</span>
+                </div>
+                <div [class]="'badge '+getStatusClass(t)">{{ getStatusLabel(t) }}</div>
+              </div>
+              <div class="tc-body">
+                @if (t.name) { <div class="td"><span>👤 მგზავრი</span><span>{{ t.name }}</span></div> }
+                @if (t.date) { <div class="td"><span>📅 თარიღი</span><span>{{ formatDate(t.date) }}</span></div> }
+                @if (getId(t)) { <div class="td"><span>🔖 ID</span><span class="tid">{{ getId(t) }}</span></div> }
+              </div>
+              <div class="tc-act">
+                <button class="btn btn-ghost btn-sm" [disabled]="checkingId===getId(t)" (click)="checkStatus(t)">
+                  @if(checkingId===getId(t)){<span class="spinner" style="width:12px;height:12px;border-width:2px"></span>}@else{🔍}
+                  სტატუსი
+                </button>
+                @if (!isConfirmed(t)) {
+                  <button class="btn btn-success btn-sm" [disabled]="confirmingId===getId(t)" (click)="confirmTicket(t)">
+                    @if(confirmingId===getId(t)){<span class="spinner" style="width:12px;height:12px;border-width:2px"></span>}@else{✅}
+                    დადასტურება
+                  </button>
+                }
+                <button class="btn btn-danger btn-sm" [disabled]="cancellingId===getId(t)" (click)="cancelTicket(t)">
+                  @if(cancellingId===getId(t)){<span class="spinner" style="width:12px;height:12px;border-width:2px"></span>}@else{❌}
+                  გაუქმება
+                </button>
+              </div>
+              @if (statusDetails[getId(t)]) {
+                <div class="sdet">
+                  <strong>სტატუსი:</strong> {{ statusDetails[getId(t)] | json }}
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+
+  </div>
+</div>

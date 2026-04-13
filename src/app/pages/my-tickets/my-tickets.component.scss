@@ -1,0 +1,29 @@
+.page-wrap { padding:40px 0 80px; }
+.container { max-width:1100px;margin:0 auto;padding:0 24px; }
+.mb { margin-bottom:24px; }
+.pg-hdr { display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:32px; }
+.pg-hdr h1 { font-size:28px;margin-bottom:6px; }
+.pg-hdr p { color:var(--text-secondary);font-size:14px; }
+.hdr-act { display:flex;gap:10px;align-items:center;flex-shrink:0; }
+.stats-bar { display:flex;gap:24px;margin-bottom:28px;padding:16px 24px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg); }
+.stat { display:flex;flex-direction:column;align-items:center;gap:2px; }
+.sn { font-size:26px;font-weight:800;color:var(--accent);line-height:1; }
+.sl { font-size:12px;color:var(--text-muted); }
+.tg { display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px; }
+.tc { padding:0;overflow:hidden;transition:all .2s ease; }
+.tc.confirmed { border-color:rgba(34,197,94,.25); }
+.tc-hdr { display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--bg-elevated);border-bottom:1px solid var(--border);gap:12px; }
+.tc-route { display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;min-width:0; }
+.tar { color:var(--text-muted);flex-shrink:0; }
+.tc-body { padding:16px 20px;display:flex;flex-direction:column;gap:10px; }
+.td { display:flex;justify-content:space-between;align-items:center;font-size:13px;gap:8px; }
+.td span:first-child { color:var(--text-secondary);flex-shrink:0; }
+.td span:last-child { font-weight:500;text-align:right; }
+.tid { font-family:monospace;font-size:11px;color:var(--accent);word-break:break-all; }
+.tc-act { display:flex;gap:8px;padding:12px 20px;border-top:1px solid var(--border);flex-wrap:wrap; }
+.sdet { margin:0 20px 16px;padding:10px 14px;background:var(--info-soft);border:1px solid var(--border-hover);border-radius:var(--radius-sm);font-size:11px;color:var(--text-secondary);font-family:monospace;overflow:auto;max-height:100px; }
+@media(max-width:600px) {
+  .tg{grid-template-columns:1fr}
+  .pg-hdr{flex-direction:column}
+  .stats-bar{gap:16px}
+}
